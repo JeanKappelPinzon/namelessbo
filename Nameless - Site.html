@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NAMELESS - Um MMORPG 2D inspirado em Bleach com PvP massivo, dungeons canônicas, raid bosses e sistema de Battle Pass mensal. Baixe grátis!">
+    <meta name="keywords" content="MMORPG 2D, Bleach Online, PvP, Jogo Multiplayer, Battle Pass">
+    <meta name="theme-color" content="#06b6d4">
+    <link rel="icon" type="image/png" href="https://i.ibb.co/C4jpmCv/Design-sem-nome-1.png">
+    <title>NAMELESS - BLEACH ONLINE | MMORPG 2D Oficial</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Teko:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'teko': ['Teko', 'sans-serif'],
+                        'raj': ['Rajdhani', 'sans-serif'],
+                    },
+                    colors: {
+                        'reishi': '#06b6d4', // Cyan
+                        'getsuga': '#000000', // Deep Black
+                        'hollow': '#ffffff', // Stark White
+                        'quincy': '#2563eb', // Blue
+                        'danger': '#ef4444',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Estilos Globais */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background-color: #000;
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+        
+        img {
+            loading: lazy;
+        }
+
+        /* O Background GIF Fixo */
+        .bg-video-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            background: url('https://i.postimg.cc/1RrzZPk5/background.gif') no-repeat center center fixed; 
+            background-size: cover;
+            filter: grayscale(80%) brightness(0.4); /* Deixar o GIF mais escuro para ler o texto */
+        }
+        
+        /* Overlay de grade para dar efeito tático */
+        .grid-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-image: 
+                linear-gradient(rgba(6, 182, 212, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(6, 182, 212, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+        }
+
+        /* Títulos agressivos */
+        h1, h2, h3, .nav-item {
+            font-family: 'Teko', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* CORTE ANGULAR (A assinatura visual do TYBW) */
+        .cut-corner {
+            clip-path: polygon(
+                15px 0, 100% 0, 
+                100% calc(100% - 15px), calc(100% - 15px) 100%, 
+                0 100%, 0 15px
+            );
+            transition: all 0.3s ease;
+        }
+        
+        .cut-corner-r {
+            clip-path: polygon(
+                0 0, 100% 0, 
+                100% calc(100% - 20px), calc(100% - 20px) 100%, 
+                20px 100%, 0 100%
+            );
+        }
+
+        /* Botões Neon */
+        .btn-neon {
+            background: rgba(6, 182, 212, 0.1);
+            border: 1px solid rgba(6, 182, 212, 0.5);
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn-neon:hover {
+            background: rgba(6, 182, 212, 0.8);
+            color: #000;
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.6);
+            transform: translateY(-2px);
+        }
+
+        .btn-neon::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: 0.5s;
+        }
+
+        .btn-neon:hover::before {
+            left: 100%;
+        }
+
+        /* Cards de Vidro */
+        .glass-panel {
+            background: rgba(10, 10, 10, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .glass-panel:hover {
+            border-color: rgba(6, 182, 212, 0.5);
+        }
+
+        /* Scrollbar customizada */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: #333; }
+        ::-webkit-scrollbar-thumb:hover { background: #06b6d4; }
+
+        /* Animação de Texto Brilhante */
+        .glow-text {
+            text-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-reishi selection:text-black">
+
+    <div class="bg-video-wrapper"></div>
+    <div class="grid-overlay"></div>
+
+    <nav class="fixed w-full z-50 bg-black/90 border-b border-gray-800 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <div class="flex items-center">
+    <a href="#" class="flex items-center group">
+        <img class="h-10 w-10 rounded-full grayscale group-hover:grayscale-0 transition duration-300" src="https://i.ibb.co/C4jpmCv/Design-sem-nome-1.png" alt="Logo">
+        <div class="ml-3 flex flex-col">
+            <span class="text-2xl font-bold font-teko leading-none tracking-widest text-white group-hover:text-reishi transition">NAMELESS</span>
+            <span class="text-xs font-raj tracking-[0.3em] text-gray-500 group-hover:text-gray-300">BLEACH ONLINE</span>
+        </div>
+    </a>
+</div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-8">
+                        <a href="#home" class="nav-item text-xl text-gray-300 hover:text-reishi hover:underline underline-offset-4 decoration-2 px-3 py-2 transition-all">INÍCIO</a>
+                        <a href="#features" class="nav-item text-xl text-gray-300 hover:text-reishi hover:underline underline-offset-4 decoration-2 px-3 py-2 transition-all">RECURSOS</a>
+                        <a href="#characters" class="nav-item text-xl text-gray-300 hover:text-reishi hover:underline underline-offset-4 decoration-2 px-3 py-2 transition-all">CLASSES</a>
+                        <a href="#shop" class="nav-item text-xl text-gray-300 hover:text-reishi hover:underline underline-offset-4 decoration-2 px-3 py-2 transition-all">BATTLEPASS</a>
+                        <a href="#vip" class="nav-item text-xl text-yellow-400 hover:text-yellow-300 hover:underline underline-offset-4 decoration-2 px-3 py-2 transition-all font-bold">VIP</a>
+                        <a href="#database" class="nav-item text-xl text-gray-300 hover:text-reishi hover:underline underline-offset-4 decoration-2 px-3 py-2 transition-all">DATABASE</a>
+                        <a href="#download" class="cut-corner bg-reishi text-black font-bold px-6 py-1 hover:bg-white transition-colors">JOGAR</a>
+                    </div>
+                </div>
+                <div class="-mr-2 flex md:hidden">
+                    <button type="button" id="mobile-menu-button" class="inline-flex items-center justify-center p-2 text-reishi hover:text-white focus:outline-none">
+                        <i class="fas fa-bars fa-2x"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="hidden md:hidden bg-black border-t border-gray-800" id="mobile-menu">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 text-center">
+                <a href="#home" class="block font-teko text-2xl text-gray-300 hover:text-reishi py-2">HOME</a>
+                <a href="#features" class="block font-teko text-2xl text-gray-300 hover:text-reishi py-2">FEATURES</a>
+                <a href="#characters" class="block font-teko text-2xl text-gray-300 hover:text-reishi py-2">CLASSES</a>
+                <a href="#vip" class="block font-teko text-2xl text-yellow-400 hover:text-yellow-300 py-2 font-bold">VIP</a>
+                <a href="#database" class="block font-teko text-2xl text-gray-300 hover:text-reishi py-2">DATABASE</a>
+                <a href="#download" class="block font-teko text-2xl text-black bg-reishi mx-4 py-2 mt-4">DOWNLOAD</a>
+            </div>
+        </div>
+    </nav>
+
+    <section id="home" class="relative pt-32 pb-20 min-h-screen flex items-center">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full z-10">
+            <div class="flex flex-col md:flex-row items-center justify-between">
+                
+                <div class="md:w-1/2 mb-10 md:mb-0 space-y-6">
+                    <div class="inline-block px-3 py-1 border border-reishi/30 bg-reishi/10 text-reishi text-xs font-bold tracking-[0.2em] font-raj cut-corner mb-2">
+                        MMORPG 2D • 
+                    </div>
+                    
+                    <h1 class="text-7xl md:text-9xl font-bold leading-[0.8] text-white tracking-tighter mix-blend-screen">
+                        AWAKEN<br>
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-reishi to-blue-600 glow-text">YOUR SOUL</span>
+                    </h1>
+                    
+                    <p class="text-xl md:text-2xl text-gray-300 font-light border-l-4 border-reishi pl-6 max-w-lg">
+                        Encare desafios diários e lute para se tornar o melhor neste MMORPG 2D inspirado no renomado anime <span class="text-reishi font-semibold">Bleach</span>.
+                    </p>
+
+                    <div class="flex flex-col sm:flex-row gap-4 pt-6">
+                        <a href="#download" class="btn-neon cut-corner px-10 py-4 font-teko text-3xl font-bold text-center">
+                            <i class="fas fa-download mr-2 text-sm"></i> DOWNLOAD
+                        </a>
+                        <a href="#media" class="px-10 py-4 font-teko text-3xl font-bold text-gray-400 hover:text-white border border-gray-700 hover:border-white cut-corner transition-all text-center">
+                            TRAILER
+                        </a>
+                    </div>
+                    
+                    <div class="flex gap-6 text-xs text-gray-500 font-raj tracking-widest pt-8">
+                        <div class="flex items-center"><span class="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></span>SERVER ONLINE</div>
+                        <div class="flex items-center"><span class="w-2 h-2 bg-reishi rounded-full mr-2"></span>V.1.0.0</div>
+                    </div>
+                </div>
+
+                <div class="md:w-1/2 flex justify-center relative">
+                    <div class="absolute w-[500px] h-[500px] border border-reishi/20 rounded-full animate-[spin_10s_linear_infinite]"></div>
+                    <div class="absolute w-[400px] h-[400px] border border-dashed border-white/10 rounded-full"></div>
+                    
+                    <div class="relative z-10 cut-corner border-2 border-reishi/30 p-1 bg-black/50 backdrop-blur-sm transform hover:scale-105 transition duration-500 shadow-[0_0_50px_rgba(6,182,212,0.2)]">
+                        <img src="https://i.ibb.co/KzDKMyMw/Nova-Imagem-de-Bitmap-2.png" alt="Game Screenshot" class="cut-corner grayscale hover:grayscale-0 transition duration-500">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="features" class="py-24 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="mb-16 border-b border-gray-800 pb-4 flex justify-between items-end">
+                <div>
+                    <h2 class="text-5xl md:text-6xl text-white mb-2">GAME <span class="text-reishi">FEATURES</span></h2>
+                    <p class="text-gray-400 font-raj text-lg uppercase tracking-widest">Sistemas Principais</p>
+                </div>
+                <div class="hidden md:block text-reishi text-4xl"><i class="fas fa-snowflake fa-spin-slow"></i></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="glass-panel cut-corner p-8 group hover:bg-gray-900/90 transition duration-300">
+                    <div class="text-reishi mb-6 transform group-hover:-translate-y-2 transition duration-300">
+                        <i class="fas fa-khanda fa-3x filter drop-shadow-[0_0_10px_rgba(6,182,212,0.8)]"></i>
+                    </div>
+                    <h3 class="text-3xl text-white mb-3 group-hover:text-reishi transition">SKILL PROGRESSION</h3>
+                    <p class="text-gray-400 font-raj leading-relaxed">
+                        Shikai e Bankai com animações únicas. Além de diversas habilidades exclusivas referentes a sua Classe escolhida.
+                    </p>
+                </div>
+
+                <div class="glass-panel cut-corner p-8 group hover:bg-gray-900/90 transition duration-300">
+                    <div class="text-reishi mb-6 transform group-hover:-translate-y-2 transition duration-300">
+                        <i class="fas fa-balance-scale fa-3x filter drop-shadow-[0_0_10px_rgba(6,182,212,0.8)]"></i>
+                    </div>
+                    <h3 class="text-3xl text-white mb-3 group-hover:text-reishi transition">SOUL WAR</h3>
+                    <p class="text-gray-400 font-raj leading-relaxed">
+                        PvP Massivo. Controle o equilíbrio das almas em uma dísputa para quem conseguir destruir o centro da balança com batalhas intensas.
+                    </p>
+                </div>
+
+                <div class="glass-panel cut-corner p-8 group hover:bg-gray-900/90 transition duration-300">
+                    <div class="text-reishi mb-6 transform group-hover:-translate-y-2 transition duration-300">
+                        <i class="fas fa-skull fa-3x filter drop-shadow-[0_0_10px_rgba(6,182,212,0.8)]"></i>
+                    </div>
+                    <h3 class="text-3xl text-white mb-3 group-hover:text-reishi transition">RAID BOSSES</h3>
+                    <p class="text-gray-400 font-raj leading-relaxed">
+                        Junte seu time para enfrentar adversários poderosos em tempo real. Além das batalhas, existe um sistema de <span class="text-yellow-400 font-bold">runas</span> obtidas ao derrotar Raid Bosses: runas que variam em atributos e efeitos, como chance de dano duplo, aumento de chance de crítico e mesmo o fortalecimento de armas especificamente ligado ao boss enfrentado — permitindo personalizar builds e estratégias com base nas runas coletadas.
+                    </p>
+                </div>
+
+                <div class="glass-panel cut-corner p-8 group hover:bg-gray-900/90 transition duration-300">
+                    <div class="text-reishi mb-6 transform group-hover:-translate-y-2 transition duration-300">
+                        <i class="fas fa-torii-gate fa-3x filter drop-shadow-[0_0_10px_rgba(6,182,212,0.8)]"></i>
+                    </div>
+                    <h3 class="text-3xl text-white mb-3 group-hover:text-reishi transition">DUNGEONS CANÔNICAS</h3>
+                    <p class="text-gray-400 font-raj leading-relaxed">
+                        Reviva arcos clássicos do anime em masmorras instanciadas.
+                    </p>
+                </div>
+
+                <div class="glass-panel cut-corner p-8 group hover:bg-gray-900/90 transition duration-300">
+                    <div class="text-reishi mb-6 transform group-hover:-translate-y-2 transition duration-300">
+                        <i class="fas fa-user-ninja fa-3x filter drop-shadow-[0_0_10px_rgba(6,182,212,0.8)]"></i>
+                    </div>
+                    <h3 class="text-3xl text-white mb-3 group-hover:text-reishi transition">VISUAL</h3>
+                    <p class="text-gray-400 font-raj leading-relaxed">
+                        Centenas de acessórios, elmos e mantos.
+                    </p>
+                </div>
+
+                <div class="glass-panel cut-corner p-8 group hover:bg-gray-900/90 transition duration-300">
+                    <div class="text-reishi mb-6 transform group-hover:-translate-y-2 transition duration-300">
+                        <i class="fas fa-crown fa-3x filter drop-shadow-[0_0_10px_rgba(6,182,212,0.8)]"></i>
+                    </div>
+                    <h3 class="text-3xl text-white mb-3 group-hover:text-reishi transition">SERVER's BEST SHOWDOWN</h3>
+                    <p class="text-gray-400 font-raj leading-relaxed">
+                        Suba de nível, evolua sua Zanpakuto, acumule pontos da Soul War e Karma, e conquiste recompensas diárias ao se manter entre os melhores.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="shop" class="py-24 bg-gradient-to-b from-transparent to-black/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-5xl md:text-7xl text-white mb-4 glow-text">BATTLE<span class="text-yellow-500">PASS</span></h2>
+                <div class="h-1 w-24 bg-yellow-500 mx-auto mb-8"></div>
+                
+                <div class="max-w-3xl mx-auto glass-panel cut-corner p-8 border-l-4 border-yellow-500">
+                    <p class="text-lg md:text-xl text-gray-300 font-raj leading-relaxed mb-6">
+                        O <span class="text-yellow-500 font-bold">Battle Pass</span> se renova a cada mês, sempre com um <span class="text-yellow-400">item raro como recompensa máxima</span>, além de diversos outros prêmios exclusivos para os jogadores dedicados.
+                    </p>
+                    <p class="text-lg md:text-xl text-gray-300 font-raj leading-relaxed">
+                        Para progredir no Battle Pass, você terá que <span class="text-yellow-400">derrotar inúmeros inimigos</span>, ganhando pontos e progredindo até conseguir suas recompensas. Quanto mais combates você participar, mais rápido desbloquearás os prêmios mensais!
+                    </p>
+                </div>
+            </div>           
+    </section>
+
+    <section id="vip" class="py-24 bg-gradient-to-r from-yellow-900/20 to-orange-900/20 relative overflow-hidden">
+        <div class="absolute inset-0 opacity-10">
+            <div class="absolute top-0 right-0 w-96 h-96 bg-yellow-500 rounded-full blur-3xl"></div>
+            <div class="absolute bottom-0 left-0 w-96 h-96 bg-orange-500 rounded-full blur-3xl"></div>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-16">
+                <h2 class="text-5xl md:text-7xl text-white mb-4 glow-text"><i class="fas fa-crown text-yellow-400 mr-4"></i>ACESSO <span class="text-yellow-400">VIP</span></h2>
+                <div class="h-1 w-24 bg-yellow-400 mx-auto mb-8"></div>
+                <p class="text-xl text-gray-300 font-raj uppercase tracking-widest">Desfrute de privilégios exclusivos e acelere sua jornada</p>
+            </div>
+
+            <div class="max-w-4xl mx-auto">
+                <div class="glass-panel cut-corner p-1 border-2 border-yellow-400 mb-12 bg-black/60 backdrop-blur-xl">
+                    <div class="p-12">
+                        <h3 class="text-4xl text-yellow-400 font-teko mb-8 tracking-widest">BENEFÍCIOS DO VIP</h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="flex items-start space-x-4">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-star text-yellow-400 text-3xl mt-1"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-xl text-white font-teko mb-2">EXPERIÊNCIA ACELERADA</h4>
+                                    <p class="text-gray-300 font-raj">Ganhe <span class="text-yellow-400 font-bold">+40% mais de EXP</span> em todos os combates e atividades.</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start space-x-4">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-dice text-yellow-400 text-3xl mt-1"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-xl text-white font-teko mb-2">CHANCE DE DROP AUMENTADA</h4>
+                                    <p class="text-gray-300 font-raj">Obtenha <span class="text-yellow-400 font-bold">+15% de chance de drop</span> de itens raros e exclusivos.</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start space-x-4">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-gift text-yellow-400 text-3xl mt-1"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-xl text-white font-teko mb-2">RECOMPENSAS EXCLUSIVAS</h4>
+                                    <p class="text-gray-300 font-raj">Acesso a <span class="text-yellow-400 font-bold">prêmios exclusivos no Battle Pass</span> que apenas membros VIP podem obter.</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start space-x-4">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-mountain-sun text-yellow-400 text-3xl mt-1"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-xl text-white font-teko mb-2">ÁREAS PREMIUM DE LEVELING</h4>
+                                    <p class="text-gray-300 font-raj">Desbloqueie <span class="text-yellow-400 font-bold">áreas exclusivas de up</span> com inimigos e recompensas especiais.</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start space-x-4">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-pickaxe text-yellow-400 text-3xl mt-1"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-xl text-white font-teko mb-2">COLETA OTIMIZADA</h4>
+                                    <p class="text-gray-300 font-raj">Acesso a <span class="text-yellow-400 font-bold">áreas premium de coleta de recursos</span> com maiores concentrações de minérios e materiais.</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start space-x-4">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-shield text-yellow-400 text-3xl mt-1"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-xl text-white font-teko mb-2">VANTAGENS ADICIONAIS</h4>
+                                    <p class="text-gray-300 font-raj">Receba bônus diários, acesso antecipado a eventos e muito mais benefícios exclusivos.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-12 pt-8 border-t border-yellow-400/30">
+                            <p class="text-gray-300 font-raj text-center text-lg">
+                                Torne-se um membro VIP e domine o NAMELESS com privilégios incomparáveis!
+                            </p>
+                            <div class="flex justify-center mt-6">
+                                <a href="#download" class="btn-neon cut-corner px-12 py-4 font-teko text-2xl font-bold text-center bg-yellow-500/20 border-2 border-yellow-400 text-yellow-400 hover:bg-yellow-500 hover:text-black transition-all inline-block">
+                                    <i class="fas fa-crown mr-2"></i> ATIVAR VIP
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="characters" class="py-24 relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-r from-blue-900/20 to-purple-900/20 pointer-events-none"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="mb-12">
+                <h2 class="text-6xl text-white mb-2">SELEÇÃO DE <span class="text-reishi">CLASSE</span></h2>
+                <div class="w-full h-[1px] bg-gradient-to-r from-reishi to-transparent"></div>
+            </div>
+
+            <div class="flex flex-col lg:flex-row gap-10">
+                
+                <div class="lg:w-2/3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                    
+                    <div class="character-card group relative h-96 cursor-pointer cut-corner overflow-hidden border border-gray-700 hover:border-reishi transition-all duration-300"
+                         data-class-name="SHINIGAMI"
+                         data-desc="Guardiões do equilíbrio. Utilizam Zanpakutous para purificar Hollows e guiar almas."
+                         data-skills="Shikai, Bankai, Kido, Shunpo">
+                        <div class="absolute inset-0 bg-[url('https://via.placeholder.com/300x400')] bg-cover bg-center grayscale group-hover:grayscale-0 transition duration-500"></div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-90"></div>
+                        <div class="absolute bottom-0 p-6">
+                            <h3 class="text-4xl text-white group-hover:text-reishi transition">SHINIGAMI</h3>
+                            <p class="text-sm font-raj tracking-widest text-gray-400">BALANCER</p>
+                        </div>
+                    </div>
+
+                    <div class="character-card group relative h-96 cursor-pointer cut-corner overflow-hidden border border-gray-700 hover:border-blue-500 transition-all duration-300"
+                         data-class-name="QUINCY"
+                         data-desc="Humanos com poderes espirituais que caçam Hollows até a extinção total."
+                         data-skills="Heilig Pfeil, Vollständig, Blut Vene, Hirenkyaku">
+                        <div class="absolute inset-0 bg-[url('https://via.placeholder.com/300x400')] bg-cover bg-center grayscale group-hover:grayscale-0 transition duration-500"></div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-90"></div>
+                        <div class="absolute bottom-0 p-6">
+                            <h3 class="text-4xl text-white group-hover:text-blue-500 transition">QUINCY</h3>
+                            <p class="text-sm font-raj tracking-widest text-gray-400">DESTROYER</p>
+                        </div>
+                    </div>
+
+                    <div class="character-card group relative h-96 cursor-pointer cut-corner overflow-hidden border border-gray-700 hover:border-purple-500 transition-all duration-300"
+                         data-class-name="ARRANCAR"
+                         data-desc="Hollows que retiraram suas máscaras e ganharam poderes similares aos Shinigamis."
+                         data-skills="Cero, Hierro, Sonído, Resurrección">
+                        <div class="absolute inset-0 bg-[url('https://via.placeholder.com/300x400')] bg-cover bg-center grayscale group-hover:grayscale-0 transition duration-500"></div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-90"></div>
+                        <div class="absolute bottom-0 p-6">
+                            <h3 class="text-4xl text-white group-hover:text-purple-500 transition">HOLLOW</h3>
+                            <p class="text-sm font-raj tracking-widest text-gray-400">BEAST</p>
+                        </div>
+                    </div>
+                    
+                    <div class="character-card group relative h-96 cursor-pointer cut-corner overflow-hidden border border-gray-700 hover:border-green-500 transition-all duration-300"
+                         data-class-name="FULLBRINGER"
+                         data-desc="Manipulam a alma da matéria. Seu poder vem do apego aos objetos."
+                         data-skills="Object Affection, Bringer Light, Matter Manipulation">
+                        <div class="absolute inset-0 bg-[url('https://via.placeholder.com/300x400')] bg-cover bg-center grayscale group-hover:grayscale-0 transition duration-500"></div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-90"></div>
+                        <div class="absolute bottom-0 p-6">
+                            <h3 class="text-4xl text-white group-hover:text-green-500 transition">FULLBRING</h3>
+                            <p class="text-sm font-raj tracking-widest text-gray-400">MATTER</p>
+                        </div>
+                    </div>
+                    
+                    <div class="character-card group relative h-96 cursor-pointer cut-corner overflow-hidden border border-gray-700 hover:border-red-500 transition-all duration-300"
+                         data-class-name="VAIZARD"
+                         data-desc="Shinigamis que quebraram a barreira entre as raças, obtendo poderes Hollow."
+                         data-skills="Hollow Mask, Cero, Enhanced Speed, Shinigami Arts">
+                        <div class="absolute inset-0 bg-[url('https://via.placeholder.com/300x400')] bg-cover bg-center grayscale group-hover:grayscale-0 transition duration-500"></div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-90"></div>
+                        <div class="absolute bottom-0 p-6">
+                            <h3 class="text-4xl text-white group-hover:text-red-500 transition">VAIZARD</h3>
+                            <p class="text-sm font-raj tracking-widest text-gray-400">HYBRID</p>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="lg:w-1/3">
+                    <div id="class-panel" class="sticky top-24 glass-panel cut-corner p-1 border-t-4 border-reishi h-full min-h-[400px] flex flex-col relative overflow-hidden">
+                        <div class="absolute inset-0 bg-[linear-gradient(transparent_50%,rgba(0,0,0,0.5)_50%)] bg-[length:100%_4px] pointer-events-none opacity-20"></div>
+                        
+                        <div class="p-8 relative z-10 flex flex-col h-full">
+                            <div class="text-reishi font-raj font-bold tracking-widest mb-4">/// DATABASE ACCESS</div>
+                            
+                            <h3 id="panel-title" class="text-6xl text-white mb-6 leading-none">SELECIONE</h3>
+                            
+                            <div class="flex-grow">
+                                <p id="panel-desc" class="text-xl text-gray-300 font-raj leading-relaxed mb-8">
+                                    Passe o mouse sobre uma classe para acessar os dados da Divisão de Desenvolvimento Tecnológico.
+                                </p>
+                                
+                                <div class="border border-gray-700 p-4 bg-black/40 cut-corner">
+                                    <h4 class="text-reishi font-teko text-2xl mb-2">HABILIDADES CHAVE:</h4>
+                                    <ul id="panel-skills" class="space-y-2 font-raj text-gray-400">
+                                        <li>---</li>
+                                        <li>---</li>
+                                        <li>---</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="mt-8 pt-4 border-t border-gray-800 flex justify-between items-center text-xs text-gray-500 font-raj">
+                                <span>DATA_ID: 00-99</span>
+                                <i class="fas fa-barcode text-2xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section id="media" class="py-24 bg-black">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-5xl text-white">MEDIA <span class="text-gray-600">GALLERY</span></h2>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                <div class="aspect-video bg-gray-900 border border-gray-800 p-1 cut-corner">
+                    <iframe class="w-full h-full cut-corner" src="https://www.youtube.com/embed/LnTwLlhUJC4?si=R-Wri7YrwH9-sa5q" title="Trailer 1" frameborder="0" allowfullscreen></iframe>
+                </div>
+                <div class="aspect-video bg-gray-900 border border-gray-800 p-1 cut-corner">
+                    <iframe class="w-full h-full cut-corner" src="https://www.youtube.com/embed/WWp37rFx6Jc?si=kVSjt2SIW1GccWKb" title="Trailer 2" frameborder="0" allowfullscreen></iframe>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <img src="https://via.placeholder.com/300x200" class="w-full cut-corner opacity-60 hover:opacity-100 transition duration-300 cursor-pointer border border-transparent hover:border-reishi">
+                <img src="https://via.placeholder.com/300x200" class="w-full cut-corner opacity-60 hover:opacity-100 transition duration-300 cursor-pointer border border-transparent hover:border-reishi">
+                <img src="https://via.placeholder.com/300x200" class="w-full cut-corner opacity-60 hover:opacity-100 transition duration-300 cursor-pointer border border-transparent hover:border-reishi">
+                <img src="https://via.placeholder.com/300x200" class="w-full cut-corner opacity-60 hover:opacity-100 transition duration-300 cursor-pointer border border-transparent hover:border-reishi">
+            </div>
+        </div>
+    </section>
+
+    <section class="py-24 relative bg-gradient-to-b from-black via-yellow-900/10 to-black">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-6xl text-white mb-4">COMPARATIVO <span class="text-yellow-400">VIP vs FREE</span></h2>
+                <div class="h-1 w-32 bg-yellow-400 mx-auto mb-8"></div>
+                <p class="text-lg md:text-xl text-gray-300 font-raj">Escolha o plano que melhor se encaixa no seu estilo de jogo</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+                <!-- PLANO FREE -->
+                <div class="glass-panel p-8 border border-gray-600 relative">
+                    <div class="mb-6 pb-6 border-b border-gray-700">
+                        <h3 class="text-white font-teko text-3xl tracking-widest">JOGADOR LIVRE</h3>
+                        <p class="text-gray-400 font-raj text-sm mt-1">Experiência padrão do jogo</p>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="flex items-start space-x-3">
+                            <i class="fas fa-times text-red-500 text-lg flex-shrink-0 mt-1"></i>
+                            <span class="text-gray-300 text-base">EXP Normal</span>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <i class="fas fa-times text-red-500 text-lg flex-shrink-0 mt-1"></i>
+                            <span class="text-gray-300 text-base">Drop Rate Normal</span>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <i class="fas fa-times text-red-500 text-lg flex-shrink-0 mt-1"></i>
+                            <span class="text-gray-300 text-base">Prêmios Padrão no Battle Pass</span>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <i class="fas fa-times text-red-500 text-lg flex-shrink-0 mt-1"></i>
+                            <span class="text-gray-300 text-base">Áreas Abertas Limitadas</span>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <i class="fas fa-times text-red-500 text-lg flex-shrink-0 mt-1"></i>
+                            <span class="text-gray-300 text-base">Sem Coleta Premium</span>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <i class="fas fa-check text-green-400 text-lg flex-shrink-0 mt-1"></i>
+                            <span class="text-gray-300 text-base">Acesso a Conteúdo Base</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PLANO VIP -->
+                <div class="glass-panel p-8 border-2 border-yellow-400 relative bg-yellow-900/20">
+                    <div class="mb-6 pb-6 border-b border-yellow-400/50">
+                        <h3 class="text-yellow-400 font-teko text-3xl tracking-widest">👑 VIP EXCLUSIVO</h3>
+                        <p class="text-yellow-300 font-raj text-sm mt-1">Máximo de Benefícios</p>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="flex items-start space-x-3">
+                            <i class="fas fa-check text-yellow-400 text-lg flex-shrink-0 mt-1"></i>
+                            <span class="text-gray-300 text-base"><span class="text-yellow-400 font-bold">+40% de EXP</span> em todos os combates</span>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <i class="fas fa-check text-yellow-400 text-lg flex-shrink-0 mt-1"></i>
+                            <span class="text-gray-300 text-base"><span class="text-yellow-400 font-bold">+15% Drop Rate</span> em itens raros</span>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <i class="fas fa-check text-yellow-400 text-lg flex-shrink-0 mt-1"></i>
+                            <span class="text-gray-300 text-base"><span class="text-yellow-400 font-bold">Itens Exclusivos</span> no Battle Pass</span>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <i class="fas fa-check text-yellow-400 text-lg flex-shrink-0 mt-1"></i>
+                            <span class="text-gray-300 text-base"><span class="text-yellow-400 font-bold">Áreas Premium</span> de Leveling</span>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <i class="fas fa-check text-yellow-400 text-lg flex-shrink-0 mt-1"></i>
+                            <span class="text-gray-300 text-base"><span class="text-yellow-400 font-bold">Coleta Premium</span> de Recursos</span>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <i class="fas fa-check text-yellow-400 text-lg flex-shrink-0 mt-1"></i>
+                            <span class="text-gray-300 text-base"><span class="text-yellow-400 font-bold">Bônus Diários</span> e Prioridade</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-center mt-12">
+                <a href="#download" class="cut-corner px-14 py-5 font-teko text-xl md:text-2xl font-bold bg-gradient-to-r from-yellow-500 to-orange-500 border-2 border-yellow-400 text-black hover:shadow-[0_0_30px_rgba(250,204,21,0.6)] transition-all inline-block">
+                    <i class="fas fa-crown mr-2"></i> JOGAR AGORA COM VIP
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section id="download" class="py-24 relative">
+        <div class="absolute inset-0 bg-gradient-to-t from-reishi/10 to-transparent pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-16">
+                <h2 class="text-6xl text-white mb-4">JOIN THE <span class="text-reishi">WAR</span></h2>
+                <p class="text-xl text-gray-400 font-raj">Baixe o cliente e comece sua jornada.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <div class="glass-panel cut-corner p-8 text-center border-t-4 border-blue-600 hover:bg-gray-900 transition">
+                    <i class="fab fa-windows fa-4x text-blue-600 mb-6"></i>
+                    <h3 class="text-3xl text-white mb-4">WINDOWS</h3>
+                    <div class="text-left bg-black/50 p-4 mb-6 font-raj text-gray-400 text-sm cut-corner">
+                        <p>> OS: Windows 10/11</p>
+                        <p>> CPU: Intel i3 / AMD Ryzen 3</p>
+                        <p>> RAM: 4GB</p>
+                        <p>> Storage: 5GB Free</p>
+                    </div>
+                    <button class="btn-neon cut-corner w-full py-4 text-xl font-bold font-teko">
+                        DOWNLOAD PC
+                    </button>
+                </div>
+
+                <div class="glass-panel cut-corner p-8 text-center border-t-4 border-gray-400 hover:bg-gray-900 transition">
+                    <i class="fab fa-apple fa-4x text-gray-400 mb-6"></i>
+                    <h3 class="text-3xl text-white mb-4">MACOS</h3>
+                    <div class="text-left bg-black/50 p-4 mb-6 font-raj text-gray-400 text-sm cut-corner">
+                        <p>> OS: Monterey 12.0+</p>
+                        <p>> Chip: M1/M2/Intel</p>
+                        <p>> RAM: 8GB</p>
+                        <p>> Storage: 5GB Free</p>
+                    </div>
+                    <button class="btn-neon cut-corner w-full py-4 text-xl font-bold font-teko">
+                        DOWNLOAD MAC
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-16 bg-black border-t border-gray-900">
+        <div class="max-w-4xl mx-auto px-4 text-center">
+            <h2 class="text-3xl text-white mb-2">RECEBA ATUALIZAÇÕES</h2>
+            <p class="text-gray-500 font-raj mb-8">Fique por dentro de eventos e patches.</p>
+            <form id="newsletter-form" class="flex flex-col sm:flex-row gap-0" onsubmit="handleNewsletterSubmit(event)">
+                <input type="email" id="newsletter-email" placeholder="SEU EMAIL..." class="flex-grow px-6 py-4 bg-gray-900 border border-gray-800 text-white font-raj focus:outline-none focus:border-reishi cut-corner-r" required>
+                <button type="submit" class="bg-reishi text-black font-bold font-teko text-xl px-10 py-4 hover:bg-white transition-colors cut-corner">
+                    INSCREVER
+                </button>
+            </form>
+            <p id="newsletter-message" class="mt-4 text-sm font-raj hidden"></p>
+        </div>
+    </section>
+
+    <footer class="bg-black py-16 border-t border-gray-900">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+                <div class="text-center md:text-left">
+                    <img class="h-12 grayscale opacity-50 hover:opacity-100 transition mb-4" src="https://i.ibb.co/kYxqFhL/pngegg-1.png" alt="Logo">
+                    <p class="text-gray-400 font-raj text-sm">MMORPG 2D Inspirado em Bleach</p>
+                </div>
+                
+                <div>
+                    <h4 class="text-white font-teko text-lg mb-4 uppercase">JOGO</h4>
+                    <ul class="space-y-2 text-gray-400 font-raj text-sm">
+                        <li><a href="#features" class="hover:text-reishi transition">Features</a></li>
+                        <li><a href="#characters" class="hover:text-reishi transition">Classes</a></li>
+                        <li><a href="#shop" class="hover:text-reishi transition">Battle Pass</a></li>
+                        <li><a href="#vip" class="hover:text-yellow-400 transition">VIP</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-white font-teko text-lg mb-4 uppercase">COMUNIDADE</h4>
+                    <ul class="space-y-2 text-gray-400 font-raj text-sm">
+                        <li><a href="#" class="hover:text-reishi transition">Suporte</a></li>
+                        <li><a href="#" class="hover:text-reishi transition">Status do Servidor</a></li>
+                        <li><a href="#" class="hover:text-reishi transition">Forum</a></li>
+                        <li><a href="#" class="hover:text-reishi transition">Patch Notes</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-white font-teko text-lg mb-4 uppercase">LEGAL</h4>
+                    <ul class="space-y-2 text-gray-400 font-raj text-sm">
+                        <li><a href="#" class="hover:text-reishi transition">Termos de Serviço</a></li>
+                        <li><a href="#" class="hover:text-reishi transition">Privacidade</a></li>
+                        <li><a href="#" class="hover:text-reishi transition">Contato</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 pt-8">
+                <div class="flex flex-col md:flex-row justify-between items-center gap-8">
+                    <div class="flex justify-center space-x-8">
+                        <a href="#" class="text-gray-500 hover:text-reishi transition" title="Discord"><i class="fab fa-discord fa-xl"></i></a>
+                        <a href="#" class="text-gray-500 hover:text-reishi transition" title="Twitter"><i class="fab fa-twitter fa-xl"></i></a>
+                        <a href="#" class="text-gray-500 hover:text-reishi transition" title="YouTube"><i class="fab fa-youtube fa-xl"></i></a>
+                        <a href="#" class="text-gray-500 hover:text-reishi transition" title="Instagram"><i class="fab fa-instagram fa-xl"></i></a>
+                    </div>
+                    
+                    <p class="text-gray-600 font-raj text-xs text-center md:text-right">
+                        © NAMELESS - BLEACH ONLINE. Fan Project. <br>
+                        Bleach is a registered trademark of Tite Kubo/Shueisha, TV TOKYO, dentsu, Pierrot.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Menu Mobile
+        const btn = document.getElementById('mobile-menu-button');
+        const menu = document.getElementById('mobile-menu');
+
+        btn.addEventListener('click', () => {
+            menu.classList.toggle('hidden');
+        });
+
+        // Interação dos Cards de Classe (Hover Effect)
+        const cards = document.querySelectorAll('.character-card');
+        const title = document.getElementById('panel-title');
+        const desc = document.getElementById('panel-desc');
+        const skillsList = document.getElementById('panel-skills');
+
+        cards.forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                const name = card.getAttribute('data-class-name');
+                const description = card.getAttribute('data-desc');
+                const skills = card.getAttribute('data-skills').split(',');
+
+                title.innerText = name;
+                desc.innerText = description;
+                
+                // Limpa e recria a lista de skills
+                skillsList.innerHTML = '';
+                skills.forEach(skill => {
+                    const li = document.createElement('li');
+                    li.className = 'flex items-center';
+                    li.innerHTML = `<i class="fas fa-caret-right text-reishi mr-2"></i> ${skill.trim()}`;
+                    skillsList.appendChild(li);
+                });
+
+                // Efeito visual no painel
+                const panel = document.getElementById('class-panel');
+                panel.classList.add('border-white');
+                setTimeout(() => panel.classList.remove('border-white'), 300);
+            });
+        });
+
+        // Validação e Envio do Newsletter
+        function handleNewsletterSubmit(event) {
+            event.preventDefault();
+            const emailInput = document.getElementById('newsletter-email');
+            const messageEl = document.getElementById('newsletter-message');
+            const email = emailInput.value;
+
+            // Validação básica de email
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                messageEl.textContent = '❌ Por favor, insira um email válido!';
+                messageEl.className = 'mt-4 text-sm font-raj text-red-400';
+                messageEl.classList.remove('hidden');
+                return;
+            }
+
+            // Simular envio
+            messageEl.textContent = '✅ Email cadastrado com sucesso! Obrigado!';
+            messageEl.className = 'mt-4 text-sm font-raj text-green-400';
+            messageEl.classList.remove('hidden');
+            emailInput.value = '';
+
+            // Esconder mensagem após 4 segundos
+            setTimeout(() => {
+                messageEl.classList.add('hidden');
+            }, 4000);
+        }
+    </script>
+</body>
+</html>
