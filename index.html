@@ -78,31 +78,84 @@
             return div;
         }
 
-        function renderDBList(list) {
+        let dbPagination = {
+            currentPage: 1,
+            itemsPerPage: 4,
+            totalItems: 0,
+            currentList: []
+        };
+
+        function renderDBList(list, page = 1) {
             const container = document.getElementById('db-list');
             container.innerHTML = '';
             if (!list || list.length === 0) {
                 container.innerHTML = '<div class="text-center text-gray-400 p-6">Nenhum resultado encontrado.</div>';
+                document.getElementById('db-pagination').innerHTML = '';
                 return;
             }
-            list.forEach(item => {
+
+            dbPagination.currentList = list;
+            dbPagination.totalItems = list.length;
+            dbPagination.currentPage = page;
+
+            const start = (page - 1) * dbPagination.itemsPerPage;
+            const end = start + dbPagination.itemsPerPage;
+            const pageItems = list.slice(start, end);
+
+            pageItems.forEach(item => {
                 container.appendChild(renderNPCCard(item));
             });
+
+            renderPagination();
+        }
+
+        function renderPagination() {
+            const paginationContainer = document.getElementById('db-pagination');
+            const totalPages = Math.ceil(dbPagination.totalItems / dbPagination.itemsPerPage);
+
+            if (totalPages <= 1) {
+                paginationContainer.innerHTML = '';
+                return;
+            }
+
+            let html = '<div class="flex justify-center items-center gap-4 mt-6">';
+            
+            if (dbPagination.currentPage > 1) {
+                html += `<button onclick="changePage(${dbPagination.currentPage - 1})" class="btn-neon cut-corner px-4 py-2 font-teko text-sm">← ANTERIOR</button>`;
+            } else {
+                html += `<button disabled class="btn-neon cut-corner px-4 py-2 font-teko text-sm opacity-50 cursor-not-allowed">← ANTERIOR</button>`;
+            }
+
+            html += `<span class="text-gray-300 font-raj">Página ${dbPagination.currentPage} de ${totalPages}</span>`;
+
+            if (dbPagination.currentPage < totalPages) {
+                html += `<button onclick="changePage(${dbPagination.currentPage + 1})" class="btn-neon cut-corner px-4 py-2 font-teko text-sm">PRÓXIMA →</button>`;
+            } else {
+                html += `<button disabled class="btn-neon cut-corner px-4 py-2 font-teko text-sm opacity-50 cursor-not-allowed">PRÓXIMA →</button>`;
+            }
+
+            html += '</div>';
+            paginationContainer.innerHTML = html;
+        }
+
+        function changePage(page) {
+            renderDBList(dbPagination.currentList, page);
         }
 
         // Inicializa com NPCs
         document.addEventListener('DOMContentLoaded', () => {
-            renderDBList(dbData.npcs);
+            renderDBList(dbData.npcs, 1);
 
             // Tabs
             document.querySelectorAll('.db-tab').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const tab = btn.getAttribute('data-tab');
-                    if (tab === 'npcs') renderDBList(dbData.npcs);
-                    if (tab === 'drops') renderDBList(dbData.npcs); // placeholder: drops view
+                    if (tab === 'npcs') renderDBList(dbData.npcs, 1);
+                    if (tab === 'drops') renderDBList(dbData.npcs, 1); // placeholder: drops view
                     if (tab === 'formulas') {
                         const container = document.getElementById('db-list');
                         container.innerHTML = '';
+                        document.getElementById('db-pagination').innerHTML = '';
                         dbData.formulas.forEach(f => {
                             const el = document.createElement('div');
                             el.className = 'glass-panel p-4 cut-corner';
@@ -133,11 +186,11 @@
             const search = document.getElementById('db-search');
             search.addEventListener('input', (e) => {
                 const q = e.target.value.toLowerCase().trim();
-                if (!q) return renderDBList(dbData.npcs);
+                if (!q) return renderDBList(dbData.npcs, 1);
                 const filtered = dbData.npcs.filter(n => {
                     return n.name.toLowerCase().includes(q) || n.zone.toLowerCase().includes(q) || (n.drops && n.drops.join(' ').toLowerCase().includes(q));
                 });
-                renderDBList(filtered);
+                renderDBList(filtered, 1);
             });
         });
     </script>
@@ -1103,6 +1156,7 @@
                 <div id="db-content">
                     <!-- Conteúdo renderizado via JS -->
                     <div id="db-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                    <div id="db-pagination"></div>
                 </div>
             </div>
         </div>
