@@ -37,28 +37,64 @@
 
     <script>
         // Dados de exemplo para o Database (NPCs / Drops / Formulas)
+        // Usa caminhos locais em assets/; fallback automático para placeholders
         const dbData = {
             npcs: [
-                { id: 1, name: 'Hollow Grunt', level: 12, zone: 'Forest of Souls', photo: 'https://via.placeholder.com/80?text=Hollow+Grunt', drops: ['Hollow Shard', 'Rune: Bleak'], notes: 'Grupo comum' },
-                { id: 2, name: 'Hollow Brute', level: 20, zone: 'Ruined Gate', photo: 'https://via.placeholder.com/80?text=Hollow+Brute', drops: ['Brute Fang', 'Rune: Strength'], notes: 'Tank, drop raro' },
-                { id: 3, name: 'Soul Thief', level: 25, zone: 'Soul Market', photo: 'https://via.placeholder.com/80?text=Soul+Thief', drops: ['Thief Cloak', 'Rune: Crit'], notes: 'Ataques rápidos' },
-                { id: 4, name: 'Forest Warden', level: 30, zone: 'Ancient Grove', photo: 'https://via.placeholder.com/80?text=Warden', drops: ['Warden Bark', 'Rune: DoubleHit'], notes: 'Mini-boss' },
-                { id: 5, name: 'Rift Drake', level: 45, zone: 'Sky Rift', photo: 'https://via.placeholder.com/80?text=Rift+Drake', drops: ['Drake Scale', 'Rune: FireBoost'], notes: 'Boss aéreo' },
-                { id: 6, name: 'Cursed Soldier', level: 18, zone: 'Forgotten Camp', photo: 'https://via.placeholder.com/80?text=Soldier', drops: ['Soldier Helmet', 'Rune: Defense'], notes: '' },
-                { id: 7, name: 'Night Stalker', level: 38, zone: 'Dark Alley', photo: 'https://via.placeholder.com/80?text=Stalker', drops: ['Stalker Fang', 'Rune: CritChance'], notes: 'Stealth' },
-                { id: 8, name: 'Abyssal Horror', level: 50, zone: 'Deep Abyss', photo: 'https://via.placeholder.com/80?text=Horror', drops: ['Horror Eye', 'Rune: DoubleHit'], notes: 'Raid Boss' },
-                { id: 9, name: 'Quincy Hunter', level: 28, zone: 'Sacred Plains', photo: 'https://via.placeholder.com/80?text=Hunter', drops: ['Hunter Token', 'Rune: RangeBoost'], notes: '' },
-                { id: 10, name: 'Shinigami Cadet', level: 8, zone: 'Seireitei Outskirts', photo: 'https://via.placeholder.com/80?text=Cadet', drops: ['Cadet Blade'], notes: 'NPC de treinamento' }
+                { id: 1, name: 'Hollow Grunt', level: 12, zone: 'Forest of Souls', photo: 'assets/npcs/hollow_grunt.png', drops: ['Hollow Shard', 'Rune: Bleak'], notes: 'Grupo comum' },
+                { id: 2, name: 'Hollow Brute', level: 20, zone: 'Ruined Gate', photo: 'assets/npcs/hollow_brute.png', drops: ['Brute Fang', 'Rune: Strength'], notes: 'Tank, drop raro' },
+                { id: 3, name: 'Soul Thief', level: 25, zone: 'Soul Market', photo: 'assets/npcs/soul_thief.png', drops: ['Thief Cloak', 'Rune: Crit'], notes: 'Ataques rápidos' },
+                { id: 4, name: 'Forest Warden', level: 30, zone: 'Ancient Grove', photo: 'assets/npcs/forest_warden.png', drops: ['Warden Bark', 'Rune: DoubleHit'], notes: 'Mini-boss' },
+                { id: 5, name: 'Rift Drake', level: 45, zone: 'Sky Rift', photo: 'assets/npcs/rift_drake.png', drops: ['Drake Scale', 'Rune: FireBoost'], notes: 'Boss aéreo' },
+                { id: 6, name: 'Cursed Soldier', level: 18, zone: 'Forgotten Camp', photo: 'assets/npcs/cursed_soldier.png', drops: ['Soldier Helmet', 'Rune: Defense'], notes: '' },
+                { id: 7, name: 'Night Stalker', level: 38, zone: 'Dark Alley', photo: 'assets/npcs/night_stalker.png', drops: ['Stalker Fang', 'Rune: CritChance'], notes: 'Stealth' },
+                { id: 8, name: 'Abyssal Horror', level: 50, zone: 'Deep Abyss', photo: 'assets/npcs/abyssal_horror.png', drops: ['Horror Eye', 'Rune: DoubleHit'], notes: 'Raid Boss' },
+                { id: 9, name: 'Quincy Hunter', level: 28, zone: 'Sacred Plains', photo: 'assets/npcs/quincy_hunter.png', drops: ['Hunter Token', 'Rune: RangeBoost'], notes: '' },
+                { id: 10, name: 'Shinigami Cadet', level: 8, zone: 'Seireitei Outskirts', photo: 'assets/npcs/shinigami_cadet.png', drops: ['Cadet Blade'], notes: 'NPC de treinamento' }
             ],
             drops: [],
             formulas: [
-                { id: 'luva_mistica', name: 'Luva Mística', result: 'Luva Mística', resultPhoto: 'https://via.placeholder.com/80?text=Luva', ingredients: [
-                    { name: 'Pedra Divina', photo: 'https://via.placeholder.com/60?text=Pedra' },
-                    { name: '100k Kan', photo: 'https://via.placeholder.com/60?text=Kan' },
-                    { name: '5 Shinrei', photo: 'https://via.placeholder.com/60?text=Shinrei' }
+                { id: 'luva_mistica', name: 'Luva Mística', result: 'Luva Mística', resultPhoto: 'assets/items/luva_mistica.png', ingredients: [
+                    { name: 'Pedra Divina', photo: 'assets/items/pedra_divina.png' },
+                    { name: '100k Kan', photo: 'assets/items/kan.png' },
+                    { name: '5 Shinrei', photo: 'assets/items/shinrei.png' }
                 ]}
             ]
         };
+
+        // Fallback: se imagem em assets/ não existir, usa placeholder online
+        function getPlaceholderUrl(text) {
+            return `https://via.placeholder.com/80?text=${encodeURIComponent(text)}`;
+        }
+
+        function getPlaceholderUrlSmall(text) {
+            return `https://via.placeholder.com/60?text=${encodeURIComponent(text)}`;
+        }
+
+        async function addFallbackImages() {
+            // NPCs: tenta versão alternativa se a primeira falhar
+            for (const npc of dbData.npcs) {
+                const img = new Image();
+                img.onerror = () => {
+                    npc.photo = getPlaceholderUrl(npc.name);
+                };
+                img.src = npc.photo;
+            }
+            // Formulas: fallback para ingredientes e resultado
+            for (const formula of dbData.formulas) {
+                const img = new Image();
+                img.onerror = () => {
+                    formula.resultPhoto = getPlaceholderUrl(formula.result);
+                };
+                img.src = formula.resultPhoto;
+                for (const ing of formula.ingredients) {
+                    const ingImg = new Image();
+                    ingImg.onerror = () => {
+                        ing.photo = getPlaceholderUrlSmall(ing.name);
+                    };
+                    ingImg.src = ing.photo;
+                }
+            }
+        }
 
         // Render NPC card
         function renderNPCCard(npc) {
@@ -195,7 +231,8 @@
         }
 
         // Inicializa com NPCs
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
+            addFallbackImages();
             renderDBList(dbData.npcs, 1);
 
             // Tabs
