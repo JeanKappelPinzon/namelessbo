@@ -39,20 +39,24 @@
         // Dados de exemplo para o Database (NPCs / Drops / Formulas)
         const dbData = {
             npcs: [
-                { id: 1, name: 'Hollow Grunt', level: 12, zone: 'Forest of Souls', drops: ['Hollow Shard', 'Rune: Bleak'], notes: 'Grupo comum' },
-                { id: 2, name: 'Hollow Brute', level: 20, zone: 'Ruined Gate', drops: ['Brute Fang', 'Rune: Strength'], notes: 'Tank, drop raro' },
-                { id: 3, name: 'Soul Thief', level: 25, zone: 'Soul Market', drops: ['Thief Cloak', 'Rune: Crit'], notes: 'Ataques rápidos' },
-                { id: 4, name: 'Forest Warden', level: 30, zone: 'Ancient Grove', drops: ['Warden Bark', 'Rune: DoubleHit'], notes: 'Mini-boss' },
-                { id: 5, name: 'Rift Drake', level: 45, zone: 'Sky Rift', drops: ['Drake Scale', 'Rune: FireBoost'], notes: 'Boss aéreo' },
-                { id: 6, name: 'Cursed Soldier', level: 18, zone: 'Forgotten Camp', drops: ['Soldier Helmet', 'Rune: Defense'], notes: '' },
-                { id: 7, name: 'Night Stalker', level: 38, zone: 'Dark Alley', drops: ['Stalker Fang', 'Rune: CritChance'], notes: 'Stealth' },
-                { id: 8, name: 'Abyssal Horror', level: 50, zone: 'Deep Abyss', drops: ['Horror Eye', 'Rune: DoubleHit'], notes: 'Raid Boss' },
-                { id: 9, name: 'Quincy Hunter', level: 28, zone: 'Sacred Plains', drops: ['Hunter Token', 'Rune: RangeBoost'], notes: '' },
-                { id: 10, name: 'Shinigami Cadet', level: 8, zone: 'Seireitei Outskirts', drops: ['Cadet Blade'], notes: 'NPC de treinamento' }
+                { id: 1, name: 'Hollow Grunt', level: 12, zone: 'Forest of Souls', photo: 'https://via.placeholder.com/80?text=Hollow+Grunt', drops: ['Hollow Shard', 'Rune: Bleak'], notes: 'Grupo comum' },
+                { id: 2, name: 'Hollow Brute', level: 20, zone: 'Ruined Gate', photo: 'https://via.placeholder.com/80?text=Hollow+Brute', drops: ['Brute Fang', 'Rune: Strength'], notes: 'Tank, drop raro' },
+                { id: 3, name: 'Soul Thief', level: 25, zone: 'Soul Market', photo: 'https://via.placeholder.com/80?text=Soul+Thief', drops: ['Thief Cloak', 'Rune: Crit'], notes: 'Ataques rápidos' },
+                { id: 4, name: 'Forest Warden', level: 30, zone: 'Ancient Grove', photo: 'https://via.placeholder.com/80?text=Warden', drops: ['Warden Bark', 'Rune: DoubleHit'], notes: 'Mini-boss' },
+                { id: 5, name: 'Rift Drake', level: 45, zone: 'Sky Rift', photo: 'https://via.placeholder.com/80?text=Rift+Drake', drops: ['Drake Scale', 'Rune: FireBoost'], notes: 'Boss aéreo' },
+                { id: 6, name: 'Cursed Soldier', level: 18, zone: 'Forgotten Camp', photo: 'https://via.placeholder.com/80?text=Soldier', drops: ['Soldier Helmet', 'Rune: Defense'], notes: '' },
+                { id: 7, name: 'Night Stalker', level: 38, zone: 'Dark Alley', photo: 'https://via.placeholder.com/80?text=Stalker', drops: ['Stalker Fang', 'Rune: CritChance'], notes: 'Stealth' },
+                { id: 8, name: 'Abyssal Horror', level: 50, zone: 'Deep Abyss', photo: 'https://via.placeholder.com/80?text=Horror', drops: ['Horror Eye', 'Rune: DoubleHit'], notes: 'Raid Boss' },
+                { id: 9, name: 'Quincy Hunter', level: 28, zone: 'Sacred Plains', photo: 'https://via.placeholder.com/80?text=Hunter', drops: ['Hunter Token', 'Rune: RangeBoost'], notes: '' },
+                { id: 10, name: 'Shinigami Cadet', level: 8, zone: 'Seireitei Outskirts', photo: 'https://via.placeholder.com/80?text=Cadet', drops: ['Cadet Blade'], notes: 'NPC de treinamento' }
             ],
             drops: [],
             formulas: [
-                { id: 'xp_lvl', desc: 'XP necessária por nível', formula: 'XP = base * (1.12 ^ level)' }
+                { id: 'luva_mistica', name: 'Luva Mística', result: 'Luva Mística', resultPhoto: 'https://via.placeholder.com/80?text=Luva', ingredients: [
+                    { name: 'Pedra Divina', photo: 'https://via.placeholder.com/60?text=Pedra' },
+                    { name: '100k Kan', photo: 'https://via.placeholder.com/60?text=Kan' },
+                    { name: '5 Shinrei', photo: 'https://via.placeholder.com/60?text=Shinrei' }
+                ]}
             ]
         };
 
@@ -61,8 +65,13 @@
             const div = document.createElement('div');
             div.className = 'glass-panel p-4 cut-corner';
             div.innerHTML = `
-                <h4 class="text-lg text-white font-teko mb-1">${npc.name} <span class="text-gray-400 text-sm">Lv.${npc.level}</span></h4>
-                <div class="text-gray-400 text-sm mb-2">${npc.zone}</div>
+                <div class="flex gap-4 mb-3">
+                    <img src="${npc.photo}" alt="${npc.name}" class="w-20 h-20 rounded border border-gray-700 object-cover">
+                    <div class="flex-1">
+                        <h4 class="text-lg text-white font-teko mb-1">${npc.name} <span class="text-gray-400 text-sm">Lv.${npc.level}</span></h4>
+                        <div class="text-gray-400 text-sm">${npc.zone}</div>
+                    </div>
+                </div>
                 <div class="text-gray-300 text-sm">Drops: ${npc.drops.join(', ')}</div>
                 <div class="text-gray-400 text-xs mt-2">${npc.notes || ''}</div>
             `;
@@ -97,7 +106,23 @@
                         dbData.formulas.forEach(f => {
                             const el = document.createElement('div');
                             el.className = 'glass-panel p-4 cut-corner';
-                            el.innerHTML = `<h4 class="text-white font-teko">${f.id}</h4><div class="text-gray-300 mt-2">${f.desc}</div><div class="text-gray-400 mt-1 font-mono">${f.formula}</div>`;
+                            const ingredientsHtml = f.ingredients.map(ing => 
+                                `<div class="flex items-center gap-2 mb-2"><img src="${ing.photo}" alt="${ing.name}" class="w-12 h-12 rounded border border-gray-700 object-cover"><span class="text-gray-300">${ing.name}</span></div>`
+                            ).join('');
+                            el.innerHTML = `
+                                <h4 class="text-white font-teko text-lg mb-3">${f.name}</h4>
+                                <div class="bg-black/50 p-3 rounded mb-4 cut-corner">
+                                    <div class="text-gray-400 text-xs mb-2 font-raj">INGREDIENTES:</div>
+                                    ${ingredientsHtml}
+                                </div>
+                                <div class="flex items-center justify-center gap-3">
+                                    <div class="text-reishi font-teko text-sm">→ RESULTADO →</div>
+                                    <div class="flex items-center gap-2">
+                                        <img src="${f.resultPhoto}" alt="${f.result}" class="w-16 h-16 rounded border border-reishi object-cover">
+                                        <span class="text-reishi font-teko font-bold">${f.result}</span>
+                                    </div>
+                                </div>
+                            `;
                             container.appendChild(el);
                         });
                     }
